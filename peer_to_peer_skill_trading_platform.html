@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<title>SkillTrader</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+<style>
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f8f9fa;
+    color: #2c3e50;
+    line-height: 1.6;
+  }
+
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* Header */
+  .header {
+    background: #1e293b;
+    color: white;
+    padding: 1rem 2rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .welcome-msg {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0;
+    color: white;
+  }
+
+  #logout-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 0.9rem;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  #logout-btn:hover {
+    opacity: 0.8;
+  }
+
+  /* Login Screen */
+  #login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 2rem;
+  }
+
+  #login-screen h1 {
+    color: #4f46e5;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  #login-screen input {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+    transition: all 0.3s ease;
+  }
+
+  #login-screen input:focus {
+    border-color: #6366f1;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  }
+
+  /* Buttons */
+  button {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  button:hover:not(:disabled) {
+    background: #4f46e5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  button:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+  }
+
+  /* Platform Layout */
+  #platform {
+    display: none;
+    min-height: 100vh;
+    background: #f8f9fa;
+    padding-top: 4rem;
+  }
+
+  /* Content Layout */
+  .content {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+  }
+
+  .left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* Sections */
+  section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  section h2 {
+    color: #1e293b;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f1f5f9;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  section h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 24px;
+    background: #6366f1;
+    border-radius: 2px;
+  }
+
+  /* Skill Cards */
+  .skills-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+  }
+
+  .skill-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .skill-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    border-color: #6366f1;
+  }
+
+  .skill-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .skill-card:hover::after {
+    opacity: 1;
+  }
+
+  .skill-name {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .skill-owner {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  .skill-description {
+    color: #475569;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 12px;
+    margin: 0;
+  }
+
+  /* Forms */
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: white;
+    transition: all 0.3s ease;
+  }
+
+  input:focus, select:focus {
+    border-color: #6366f1;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  }
+
+  /* Trade Proposal */
+  #trade-proposal {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+
+  /* Notifications */
+  #notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #6366f1;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 500;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+
+  #notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+  }
+
+  /* Footer */
+  footer {
+    background: #1e293b;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  footer p {
+    margin: 0;
+  }
+
+  /* Available Skills Section */
+  #available-skills-section {
+    max-height: 600px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #6366f1 #f1f5f9;
+  }
+
+  #available-skills-section::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #available-skills-section::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+
+  #available-skills-section::-webkit-scrollbar-thumb {
+    background: #6366f1;
+    border-radius: 4px;
+  }
+
+  #available-skills-section .skills-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .content {
+      grid-template-columns: 1fr;
+    }
+
+    .left-column {
+      order: 1;
+    }
+
+    #available-skills-section {
+      order: 2;
+      max-height: 500px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content {
+      padding: 0 1rem;
+    }
+
+    .skills-list {
+      grid-template-columns: 1fr;
+    }
+
+    #login-screen h1 {
+      font-size: 2rem;
+    }
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  section {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  /* Fizzy Button */
+  #propose-trade-btn {
+    position: relative;
+    background: linear-gradient(45deg, #6366f1, #4f46e5);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  #propose-trade-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #4f46e5, #6366f1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  #propose-trade-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
+  }
+
+  #propose-trade-btn:hover:not(:disabled)::before {
+    opacity: 1;
+  }
+
+  #propose-trade-btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  #propose-trade-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+    transform: scale(0);
+    transition: transform 0.5s ease;
+  }
+
+  #propose-trade-btn:hover:not(:disabled)::after {
+    transform: scale(1);
+    animation: bubble 1s ease infinite;
+  }
+
+  @keyframes bubble {
+    0% {
+      transform: scale(0);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1);
+      opacity: 0.2;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  #propose-trade-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  #propose-trade-btn:disabled::before,
+  #propose-trade-btn:disabled::after {
+    display: none;
+  }
+
+  /* Add this to your existing button styles to override */
+  button {
+    position: relative;
+    z-index: 1;
+  }
+
+  button span {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Camera Modal Styles */
+  .camera-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .camera-modal.active {
+    display: flex;
+  }
+
+  .camera-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+  }
+
+  .camera-preview {
+    width: 100%;
+    height: 400px;
+    background: #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .camera-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .camera-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .camera-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .camera-btn.primary {
+    background: #6366f1;
+    color: white;
+    border: none;
+  }
+
+  .camera-btn.secondary {
+    background: transparent;
+    color: #1e293b;
+    border: 2px solid #e2e8f0;
+  }
+
+  .camera-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+  }
+
+  .close-modal:hover {
+    color: #1e293b;
+  }
+
+  /* Menubar and Hamburger */
+  .menubar {
+    background: #2d3748;
+    padding: 0.5rem 2rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 9999;
+  }
+  .menubar .welcome-msg {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .menubar .menubar-hamburger {
+    display: block;
+    font-size: 2rem;
+    color: #e2e8f0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 10000;
+    position: relative;
+  }
+  .menubar .menubar-items {
+    display: none;
+    flex-direction: column;
+    width: 220px;
+    background: #232b39;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    border: 1px solid #374151;
+    margin-top: 0.2rem;
+    padding: 0.5rem 0;
+    z-index: 1001;
+    animation: submenuFadeIn 0.2s;
+  }
+  .menubar .menubar-items.show {
+    display: flex;
+  }
+  .menubar-item {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0;
+    font-size: 1rem;
+    color: #e2e8f0;
+    background: none;
+    border: none;
+    text-align: left;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .menubar-item:not(:last-child) {
+    border-bottom: 1px solid #374151;
+  }
+  .menubar-item:hover, .menubar-item.active {
+    background: #6366f1;
+    color: #fff;
+  }
+  @keyframes submenuFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive dropdown menu improvements */
+  .menubar .menubar-items {
+    min-width: 180px;
+    max-width: 90vw;
+    box-sizing: border-box;
+  }
+  @media (max-width: 600px) {
+    .menubar .menubar-items {
+      width: 90vw;
+      right: 5vw;
+      left: auto;
+    }
+    .menubar .menubar-item {
+      font-size: 1.1rem;
+      padding: 1rem 1.2rem;
+    }
+  }
+
+  /* Video chat styles */
+  .video-chat-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 2000;
+    width: 90%;
+    max-width: 1000px;
+  }
+
+  .video-chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .video-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .video-wrapper {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .video-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .video-label {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+
+  .chat-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .control-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: #6366f1;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .control-btn:hover {
+    background: #4f46e5;
+    transform: scale(1.1);
+  }
+
+  .end-chat-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .end-chat-btn:hover {
+    background: #dc2626;
+  }
+
+  .live-chat-panel {
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 10px;
+    margin-top: 10px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    height: 220px;
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #1e293b;
+    padding-right: 4px;
+  }
+  .chat-message {
+    margin-bottom: 4px;
+    word-break: break-word;
+  }
+  .chat-user {
+    font-weight: 600;
+    color: #6366f1;
+    margin-right: 4px;
+  }
+  .chat-form {
+    display: flex;
+    gap: 6px;
+  }
+  .chat-form input[type="text"] {
+    flex: 1;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    padding: 8px 10px;
+    font-size: 1rem;
+  }
+  .chat-form button {
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0 16px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .chat-form button:hover {
+    background: #4f46e5;
+  }
+  .ai-search-btn {
+    background: #f1f5f9;
+    color: #6366f1;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ai-search-btn:hover {
+    background: #6366f1;
+    color: #fff;
+  }
+  .ai-search-form {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .ai-search-form input[type="text"] {
+    flex: 1;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    padding: 8px 10px;
+    font-size: 1rem;
+  }
+  .ai-search-form button {
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0 16px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .ai-search-form button:hover {
+    background: #4f46e5;
+  }
+  .ai-message .chat-user {
+    color: #10b981;
+  }
+  .ai-message .chat-text {
+    color: #0f172a;
+    font-style: italic;
+  }
+</style>
+
+</head>
+<body>
+<div id="login-screen" class="container" role="main" aria-label="Login Screen">
+  <h1>Welcome to SkillTrader</h1>
+  <label for="username-input">Enter your username to continue:</label>
+  <input type="text" id="username-input" placeholder="Your username" autocomplete="off" aria-required="true" />
+  <button id="login-btn" disabled>Login</button>
+</div>
+
+<div id="platform" role="main" aria-label="Skill Trading Platform">
+  <nav class="menubar" aria-label="Main navigation">
+    <span class="welcome-msg" id="menubar-welcome-msg">Welcome, User!</span>
+    <div style="position:relative;display:flex;align-items:center;">
+      <button class="menubar-hamburger" id="menubar-hamburger" aria-label="Open menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="menubar-items" id="menubar-items">
+        <a href="profile.html" class="menubar-item" id="profile-link"><i class="fas fa-user"></i> Profile</a>
+        <a href="live_class_history.html" class="menubar-item" id="live-class-link"><i class="fas fa-video"></i> Live Class</a>
+        <a href="#" class="menubar-item" id="trade-page-link"><i class="fas fa-exchange-alt"></i> Trade Page</a>
+        <a href="#" class="menubar-item" id="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <a href="admin.html" class="menubar-item" id="admin-link" style="display:none;"><i class="fas fa-user-shield"></i> Admin</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container content">
+    <div class="left-column">
+      <section id="my-skills-section" aria-label="My Skills section">
+        <h2>My Skills</h2>
+        <form id="add-skill-form" aria-label="Add skill form">
+          <div class="form-group">
+            <label for="skill-name-input">Add a skill you offer:</label>
+            <input type="text" id="skill-name-input" placeholder="Skill name" autocomplete="off" aria-required="true" />
+          </div>
+          <button type="submit" id="add-skill-btn" disabled>Add Skill</button>
+        </form>
+        <div class="skills-list" id="my-skills-list" aria-live="polite" aria-relevant="additions"></div>
+      </section>
+
+      <section id="trade-section" aria-label="Trade proposal section">
+        <h2>Propose a Trade</h2>
+        <form id="trade-proposal" aria-label="Trade proposal form">
+          <label for="offer-skill-select">Select your skill to offer:</label>
+          <select id="offer-skill-select" aria-required="true">
+            <option value="" disabled selected>Select your skill</option>
+          </select>
+
+          <label for="request-skill-select">Select available skill you want:</label>
+          <select id="request-skill-select" aria-required="true">
+            <option value="" disabled selected>Select skill to request</option>
+          </select>
+
+          <button type="submit" id="propose-trade-btn" disabled>
+            <span>Propose Trade</span>
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <section id="available-skills-section" aria-label="Available skills offered by others">
+      <h2>Available Skills</h2>
+      <div class="skills-list" id="available-skills-list" aria-live="polite" aria-relevant="additions"></div>
+    </section>
+  </div>
+  <footer>
+    <p>&copy; 2025 Peer-to-Peer Skill Trading Platform (SkillTrader)</p>
+  </footer>
+</div>
+
+<div id="notification" role="alert" aria-live="assertive"></div>
+
+<div id="camera-modal" class="camera-modal" role="dialog" aria-label="Camera Preview">
+  <div class="camera-container">
+    <button class="close-modal" aria-label="Close camera">&times;</button>
+    <div class="camera-preview">
+      <video id="camera-video" autoplay playsinline></video>
+    </div>
+    <div class="camera-controls">
+      <button class="camera-btn secondary" id="cancel-camera">Cancel</button>
+      <button class="camera-btn primary" id="confirm-trade">Confirm Trade</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // --- MENUBAR DROPDOWN ---
+  const menubarHamburger = document.getElementById('menubar-hamburger');
+  const menubarItems = document.getElementById('menubar-items');
+  const menuLinks = menubarItems.querySelectorAll('.menubar-item');
+  menubarHamburger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menubarItems.classList.toggle('show');
+  });
+  document.addEventListener('click', (e) => {
+    if (!menubarItems.contains(e.target) && !menubarHamburger.contains(e.target)) {
+      menubarItems.classList.remove('show');
+    }
+  });
+  menuLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      menubarItems.classList.remove('show');
+    });
+  });
+
+  // --- ADMIN LINK VISIBILITY ---
+  function updateAdminLink() {
+    const adminLink = document.getElementById('admin-link');
+    const currentUser = localStorage.getItem('skilltrade_currentUser');
+    if (adminLink && currentUser === 'admin') {
+      adminLink.style.display = 'flex';
+    } else if (adminLink) {
+      adminLink.style.display = 'none';
+    }
+  }
+  updateAdminLink(); // Run on page load
+
+  // --- MAIN APP LOGIC ---
+  const API_BASE_URL = 'http://localhost:3000/api';
+  
+  // Ensure these variables are assigned at the top
+  const loginScreen = document.getElementById('login-screen');
+  const platform = document.getElementById('platform');
+  const usernameInput = document.getElementById('username-input');
+  const loginBtn = document.getElementById('login-btn');
+  const profileLink = document.getElementById('profile-link');
+
+  // Enable login button when username is not empty
+  if (usernameInput && loginBtn) {
+    usernameInput.addEventListener('input', () => {
+      loginBtn.disabled = usernameInput.value.trim().length === 0;
+    });
+  }
+
+  // Make login button work without backend
+  if (loginBtn) {
+    loginBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const uname = usernameInput.value.trim();
+      if (uname.length === 0) {
+        alert('Please enter a username.');
+        return;
+      }
+      localStorage.setItem('skilltrade_currentUser', uname);
+      updateAdminLink();
+      showPlatform();
+    });
+  }
+
+  // Example: Update logout event listener
+  const logoutLink = document.getElementById('logout-link');
+  if (logoutLink) {
+    logoutLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      localStorage.removeItem('skilltrade_currentUser');
+      updateAdminLink();
+      if (platform) platform.style.display = 'none';
+      if (loginScreen) loginScreen.style.display = 'flex';
+    });
+  }
+
+  // Example: Add null checks in showLogin and showPlatform
+  function showLogin() {
+    if (loginScreen) loginScreen.style.display = 'flex';
+    if (platform) platform.style.display = 'none';
+    // ...rest of your showLogin logic...
+  }
+  async function showPlatform() {
+    if (loginScreen) loginScreen.style.display = 'none';
+    if (platform) platform.style.display = 'flex';
+    
+    // Get current user from localStorage
+    currentUser = localStorage.getItem('skilltrade_currentUser');
+    
+    // Update welcome message
+    const welcomeMsg = document.getElementById('menubar-welcome-msg');
+    if (welcomeMsg) {
+      welcomeMsg.textContent = `Welcome, ${currentUser}!`;
+    }
+    
+    // Reset skill input
+    if (skillNameInput) {
+      skillNameInput.value = '';
+    }
+    if (addSkillBtn) {
+      addSkillBtn.disabled = true;
+    }
+    
+    // Update admin button visibility
+    const adminBtn = document.getElementById('admin-btn');
+    if (adminBtn) {
+      adminBtn.style.display = currentUser === 'admin' ? 'inline-block' : 'none';
+    }
+    
+    // Set demo skills
+    skills = [
+      { id: 'demo1', name: 'Web Development', owner: 'John Doe' },
+      { id: 'demo2', name: 'Graphic Design', owner: 'Jane Smith' },
+      { id: 'demo3', name: 'Digital Marketing', owner: 'Alex Lee' },
+      { id: 'demo4', name: 'Software Design', owner: 'Priya Patel' },
+      { id: 'demo5', name: 'UI/UX Design', owner: 'Chris Kim' },
+      { id: 'demo6', name: 'Python Programming', owner: 'Sara Lee' },
+      { id: 'demo7', name: 'Content Writing', owner: 'Amit Kumar' },
+      { id: 'demo8', name: 'Video Editing', owner: 'Emily Clark' },
+      { id: 'demo9', name: 'Social Media Management', owner: 'Ravi Singh' },
+      { id: 'demo10', name: 'SEO Optimization', owner: 'Linda Zhao' },
+      { id: 'demo11', name: 'Cloud Computing', owner: 'Mohit Verma' },
+      { id: 'demo12', name: 'Data Analysis', owner: 'Olga Petrova' }
+    ];
+    
+    // Render skills and update UI
+    renderMySkills();
+    renderAvailableSkills();
+    populateTradeSelects();
+    validateTradeForm();
+  }
+
+  // Utility functions
+  function showNotification(msg) {
+    const notif = document.getElementById('notification');
+    notif.textContent = msg;
+    notif.classList.add('show');
+    setTimeout(() => {
+      notif.classList.remove('show');
+    }, 3000);
+  }
+
+  async function fetchSkills() {
+    try {
+      console.log('Fetching skills from server...');
+      const response = await fetch(`${API_BASE_URL}/skills`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to fetch skills');
+      }
+      const data = await response.json();
+      console.log('Skills fetched:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching skills:', error);
+      showNotification('Failed to load skills. Please try again.');
+      return [];
+    }
+  }
+
+  async function addSkillToServer(skill) {
+    try {
+      console.log('Adding skill to server:', skill);
+      const response = await fetch(`${API_BASE_URL}/skills`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(skill),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to add skill');
+      }
+      const data = await response.json();
+      console.log('Skill added:', data);
+      return data;
+    } catch (error) {
+      console.error('Error adding skill:', error);
+      throw error;
+    }
+  }
+
+  async function proposeTradeToServer(trade) {
+    try {
+      console.log('Proposing trade to server:', trade);
+      const response = await fetch(`${API_BASE_URL}/trades`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(trade),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to propose trade');
+      }
+      const data = await response.json();
+      console.log('Trade proposed:', data);
+      return data;
+    } catch (error) {
+      console.error('Error proposing trade:', error);
+      throw error;
+    }
+  }
+
+  // UI elements
+  const welcomeMsg = platform.querySelector('.welcome-msg');
+  const addSkillForm = document.getElementById('add-skill-form');
+  const skillNameInput = document.getElementById('skill-name-input');
+  const addSkillBtn = document.getElementById('add-skill-btn');
+  const mySkillsList = document.getElementById('my-skills-list');
+  const availableSkillsList = document.getElementById('available-skills-list');
+  const offerSkillSelect = document.getElementById('offer-skill-select');
+  const requestSkillSelect = document.getElementById('request-skill-select');
+  const proposeTradeBtn = document.getElementById('propose-trade-btn');
+  const tradeForm = document.getElementById('trade-proposal');
+  const cameraModal = document.getElementById('camera-modal');
+  const cameraVideo = document.getElementById('camera-video');
+  const cancelCameraBtn = document.getElementById('cancel-camera');
+  const confirmTradeBtn = document.getElementById('confirm-trade');
+  const closeModalBtn = document.querySelector('.close-modal');
+  const adminBtn = document.getElementById('admin-btn');
+
+  // Current user state
+  let currentUser = null;
+  let skills = [];
+  let stream = null;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let chatRoomId = null;
+  let chatInterval = null;
+
+  // --- INIT ---
+  function init() {
+    // Check if user is logged in
+    const savedUser = localStorage.getItem('skilltrade_currentUser');
+    if (savedUser) {
+      currentUser = savedUser;
+      showPlatform();
+    } else {
+      showLogin();
+    }
+    addEventListeners();
+  }
+
+  function addEventListeners() {
+    // Login input
+    usernameInput.addEventListener('input', () => {
+      loginBtn.disabled = usernameInput.value.trim().length === 0;
+    });
+
+    loginBtn.addEventListener('click', async () => {
+      const uname = usernameInput.value.trim();
+      if (uname.length === 0) {
+        alert('Please enter a username.');
+        return;
+      }
+
+      try {
+        console.log('Attempting to login with username:', uname);
+        const response = await fetch(`${API_BASE_URL}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username: uname }),
+        });
+
+        console.log('Login response status:', response.status);
+        const data = await response.json();
+        console.log('Login response data:', data);
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+
+        currentUser = uname;
+        localStorage.setItem('skilltrade_currentUser', currentUser);
+        updateAdminLink();
+        showPlatform();
+      } catch (error) {
+        console.error('Login error:', error);
+        showNotification(`Login failed: ${error.message}. Please try again.`);
+      }
+    });
+
+    // Skill name input
+    skillNameInput.addEventListener('input', () => {
+      addSkillBtn.disabled = skillNameInput.value.trim().length === 0;
+    });
+
+    addSkillForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      await addSkill();
+    });
+
+    tradeForm.addEventListener('change', () => {
+      validateTradeForm();
+    });
+
+    tradeForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!offerSkillSelect.value || !requestSkillSelect.value) {
+        showNotification('Please select both skills to trade');
+        return;
+      }
+      await openCamera();
+    });
+
+    // Logout button
+    const logoutLink = document.getElementById('logout-link');
+    if (logoutLink) {
+      logoutLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await closeCamera();
+        localStorage.removeItem('skilltrade_currentUser');
+        updateAdminLink();
+        showLogin();
+      });
+    }
+
+    cancelCameraBtn.addEventListener('click', closeCamera);
+    closeModalBtn.addEventListener('click', closeCamera);
+    confirmTradeBtn.addEventListener('click', async () => {
+      await closeCamera();
+      await proceedWithTrade();
+    });
+
+    adminBtn.addEventListener('click', () => {
+      window.location.href = 'admin.html';
+    });
+
+    // Show admin link only for admin user
+    updateAdminLink();
+
+    // Show only the profile section
+    function showProfileSection() {
+      // Hide all main sections
+      const sections = document.querySelectorAll('.profile-section, .left-column, #videos-section, #add-skill-section, #trade-section');
+      sections.forEach(sec => { if (sec) sec.style.display = 'none'; });
+      // Show profile section
+      const profileSection = document.getElementById('profile-section');
+      if (profileSection) profileSection.style.display = 'block';
+      // Load profile image from localStorage
+      const profileImage = document.getElementById('profile-image');
+      const currentUser = localStorage.getItem('skilltrade_currentUser');
+      const savedImage = localStorage.getItem(`skilltrade_profile_image_${currentUser}`);
+      if (profileImage && savedImage) {
+        profileImage.src = savedImage;
+      }
+      // Optionally, load other profile info here
+      if (typeof loadProfileData === 'function') loadProfileData();
+    }
+
+    if (profileLink) {
+      profileLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        showProfileSection();
+      });
+    }
+
+    // Make Live Class button go to live_class_history.html
+    const liveClassLink = document.getElementById('live-class-link');
+    if (liveClassLink) {
+      liveClassLink.setAttribute('href', 'live_class_history.html');
+      liveClassLink.addEventListener('click', function(e) {
+        // Allow default navigation
+      });
+    }
+  }
+
+  // --- DISPLAY ---
+  function showLogin() {
+    if (loginScreen) loginScreen.style.display = 'flex';
+    if (platform) platform.style.display = 'none';
+    usernameInput.value = '';
+    loginBtn.disabled = true;
+    usernameInput.focus();
+    adminBtn.style.display = 'none';
+  }
+
+  async function loadData() {
+    skills = await fetchSkills();
+    if (!skills || skills.length === 0) {
+      // Add demo skills if none exist
+      skills = [
+        { id: 'demo1', name: 'Web Design', owner: 'demo_user1' },
+        { id: 'demo2', name: 'Software Design', owner: 'demo_user2' },
+        { id: 'demo3', name: 'Graphic Design', owner: 'demo_user3' },
+        { id: 'demo4', name: 'Mobile App Development', owner: 'demo_user4' },
+        { id: 'demo5', name: 'Data Analysis', owner: 'demo_user5' }
+      ];
+    }
+  }
+
+  // --- SKILLS MANAGEMENT ---
+  async function addSkill() {
+    const skillName = skillNameInput.value.trim();
+    if (!skillName) return;
+
+    try {
+      // Create a new skill object
+      const newSkill = {
+        id: 'skill_' + Date.now(),
+        name: skillName,
+        owner: currentUser
+      };
+
+      // Add to skills array
+      skills.push(newSkill);
+      
+      // Clear input and disable button
+      skillNameInput.value = '';
+      addSkillBtn.disabled = true;
+      
+      // Update UI
+      renderMySkills();
+      renderAvailableSkills();
+      populateTradeSelects();
+      showNotification(`Skill "${skillName}" added to your offerings.`);
+    } catch (error) {
+      console.error('Error adding skill:', error);
+      showNotification('Failed to add skill. Please try again.');
+    }
+  }
+
+  function renderMySkills() {
+    mySkillsList.innerHTML = '';
+    const mySkills = skills.filter(s => s.owner === currentUser);
+    if (mySkills.length === 0) {
+      mySkillsList.innerHTML = '<p style="color:#555; font-style: italic;">You have not added any skills yet.</p>';
+      return;
+    }
+    mySkills.forEach(skill => {
+      const card = document.createElement('div');
+      card.className = 'skill-card';
+      card.textContent = skill.name;
+      card.setAttribute('title', skill.name);
+      mySkillsList.appendChild(card);
+    });
+  }
+
+  function renderAvailableSkills() {
+    availableSkillsList.innerHTML = '';
+    const otherSkills = skills; // Show all skills, including demo skills
+    if (otherSkills.length === 0) {
+      availableSkillsList.innerHTML = '<p style="color:#555; font-style: italic;">No skills available from other users yet.</p>';
+      return;
+    }
+    otherSkills.forEach(skill => {
+      const card = document.createElement('div');
+      card.className = 'skill-card';
+      card.setAttribute('title', `Skill: ${skill.name}\nOffered by: ${skill.owner}`);
+      const nameElem = document.createElement('p');
+      nameElem.className = 'skill-name';
+      nameElem.textContent = skill.name;
+      const ownerElem = document.createElement('p');
+      ownerElem.className = 'skill-owner';
+      ownerElem.textContent = `By: ${skill.owner}`;
+      const descriptionElem = document.createElement('p');
+      descriptionElem.className = 'skill-description';
+      descriptionElem.textContent = getSkillDescription(skill.name);
+      card.appendChild(nameElem);
+      card.appendChild(ownerElem);
+      card.appendChild(descriptionElem);
+      availableSkillsList.appendChild(card);
+    });
+  }
+
+  function getSkillDescription(skillName) {
+    const descriptions = {
+      'Web Development': 'Create and maintain websites and web applications using modern technologies',
+      'Graphic Design': 'Design visual content for digital and print media with creative expertise',
+      'Digital Marketing': 'Promote products and services through various digital channels',
+      'Data Analysis': 'Analyze and interpret complex data sets to drive business decisions',
+      'Mobile App Development': 'Create innovative applications for iOS and Android platforms',
+      'UI/UX Design': 'Design intuitive and engaging user interfaces and experiences',
+      'Python Programming': 'Develop applications and automate tasks using Python',
+      'Content Writing': 'Create engaging and SEO-friendly content for various platforms',
+      'Video Editing': 'Edit and produce professional-quality video content',
+      'Social Media Management': 'Manage and grow social media presence across platforms',
+      'SEO Optimization': 'Improve website visibility and ranking in search engines',
+      'Cloud Computing': 'Design and implement cloud-based solutions using AWS/Azure'
+    };
+    return descriptions[skillName] || 'Skill available for trade';
+  }
+
+  // --- TRADE PROPOSAL ---
+  function populateTradeSelects() {
+    if (!offerSkillSelect || !requestSkillSelect) return;
+
+    // Clear existing options
+    offerSkillSelect.innerHTML = '<option value="" disabled selected>Select your skill</option>';
+    requestSkillSelect.innerHTML = '<option value="" disabled selected>Select skill to request</option>';
+
+    // Get current user's skills
+    const mySkills = skills.filter(s => s.owner === currentUser);
+    if (mySkills.length === 0) {
+      const option = document.createElement('option');
+      option.disabled = true;
+      option.textContent = 'Add a skill first';
+      offerSkillSelect.appendChild(option);
+    } else {
+      mySkills.forEach(s => {
+        const option = document.createElement('option');
+        option.value = s.id;
+        option.textContent = s.name;
+        offerSkillSelect.appendChild(option);
+      });
+    }
+
+    // Get other users' skills
+    const otherSkills = skills.filter(s => s.owner !== currentUser);
+    if (otherSkills.length === 0) {
+      const option = document.createElement('option');
+      option.disabled = true;
+      option.textContent = 'No skills available to request';
+      requestSkillSelect.appendChild(option);
+    } else {
+      otherSkills.forEach(s => {
+        const option = document.createElement('option');
+        option.value = s.id;
+        option.textContent = `${s.name} (By ${s.owner})`;
+        requestSkillSelect.appendChild(option);
+      });
+    }
+
+    validateTradeForm();
+  }
+
+  function validateTradeForm() {
+    if (!offerSkillSelect || !requestSkillSelect || !proposeTradeBtn) return;
+    
+    const offerVal = offerSkillSelect.value;
+    const requestVal = requestSkillSelect.value;
+    const hasOfferSkill = offerVal && offerVal !== '';
+    const hasRequestSkill = requestVal && requestVal !== '';
+    
+    proposeTradeBtn.disabled = !(hasOfferSkill && hasRequestSkill);
+  }
+
+  async function openCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      });
+      cameraVideo.srcObject = stream;
+      cameraModal.classList.add('active');
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      showNotification('Could not access camera. Please check your permissions.');
+      // Proceed with trade without camera
+      await proceedWithTrade();
+    }
+  }
+
+  async function closeCamera() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    cameraVideo.srcObject = null;
+    cameraModal.classList.remove('active');
+  }
+
+  async function proceedWithTrade() {
+    try {
+      const offerId = offerSkillSelect.value;
+      const requestId = requestSkillSelect.value;
+      const offerSkill = skills.find(s => s.id === offerId);
+      const requestSkill = skills.find(s => s.id === requestId);
+
+      // Create a unique room ID for this trade
+      const roomId = `trade_${offerSkill.id}_${requestSkill.id}_${Date.now()}`;
+      
+      // Store trade info in localStorage for the other user
+      const tradeInfo = {
+        roomId,
+        proposer: currentUser,
+        offerSkill: { id: offerSkill.id, name: offerSkill.name },
+        requestSkill: { id: requestSkill.id, name: requestSkill.name, owner: requestSkill.owner },
+        timestamp: Date.now()
+      };
+      
+      // Store trade info for both users
+      localStorage.setItem(`skilltrade_trade_${roomId}`, JSON.stringify(tradeInfo));
+      
+      // Initialize video chat
+      await initializeVideoChat(roomId, true); // true means this user is the proposer
+
+      showNotification(`Trade proposed: Your "${offerSkill.name}" for "${requestSkill.name}" by ${requestSkill.owner}.`);
+    } catch (error) {
+      console.error('Trade error:', error);
+      showNotification('Failed to propose trade. Please try again.');
+    }
+  }
+
+  // Add video chat functionality
+  let peerConnection = null;
+  let localStream = null;
+  let remoteStream = null;
+
+  async function initializeVideoChat(roomId, isProposer) {
+    try {
+      // Get user media
+      localStream = await navigator.mediaDevices.getUserMedia({ 
+        video: true, 
+        audio: true 
+      });
+      
+      // Show local video
+      const localVideo = document.getElementById('local-video');
+      if (localVideo) {
+        localVideo.srcObject = localStream;
+      }
+
+      // Initialize WebRTC
+      const configuration = {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' }
+        ]
+      };
+      
+      peerConnection = new RTCPeerConnection(configuration);
+      
+      // Add local stream to peer connection
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
+
+      // Handle incoming stream
+      peerConnection.ontrack = (event) => {
+        const remoteVideo = document.getElementById('remote-video');
+        if (remoteVideo) {
+          remoteVideo.srcObject = event.streams[0];
+          remoteStream = event.streams[0];
+        }
+      };
+
+      // Handle ICE candidates
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          // Store ICE candidate for the other user
+          const candidates = JSON.parse(localStorage.getItem(`skilltrade_ice_${roomId}`) || '[]');
+          candidates.push(event.candidate);
+          localStorage.setItem(`skilltrade_ice_${roomId}`, JSON.stringify(candidates));
+        }
+      };
+
+      if (isProposer) {
+        // Create and store offer
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        localStorage.setItem(`skilltrade_offer_${roomId}`, JSON.stringify(offer));
+        
+        // Start checking for answer
+        checkForAnswer(roomId);
+      } else {
+        // Check for offer and create answer
+        checkForOffer(roomId);
+      }
+
+      // Show video chat UI
+      showVideoChatUI(roomId);
+      chatRoomId = roomId;
+      startChatSync(roomId);
+    } catch (error) {
+      console.error('Video chat error:', error);
+      showNotification('Failed to initialize video chat. Please try again.');
+    }
+  }
+
+  async function checkForOffer(roomId) {
+    const offer = JSON.parse(localStorage.getItem(`skilltrade_offer_${roomId}`));
+    if (offer) {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      localStorage.setItem(`skilltrade_answer_${roomId}`, JSON.stringify(answer));
+    } else {
+      setTimeout(() => checkForOffer(roomId), 1000);
+    }
+  }
+
+  async function checkForAnswer(roomId) {
+    const answer = JSON.parse(localStorage.getItem(`skilltrade_answer_${roomId}`));
+    if (answer) {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    } else {
+      setTimeout(() => checkForAnswer(roomId), 1000);
+    }
+  }
+
+  function showVideoChatUI(roomId) {
+    // Create video chat container if it doesn't exist
+    let videoChatContainer = document.getElementById('video-chat-container');
+    if (!videoChatContainer) {
+      videoChatContainer = document.createElement('div');
+      videoChatContainer.id = 'video-chat-container';
+      videoChatContainer.className = 'video-chat-container';
+      document.body.appendChild(videoChatContainer);
+    }
+
+    // Update video chat UI
+    videoChatContainer.innerHTML = `
+      <div class="video-chat-header">
+        <h3>Live Trade Discussion</h3>
+        <button id="end-video-chat" class="end-chat-btn">End Chat</button>
+      </div>
+      <div class="video-grid">
+        <div class="video-wrapper">
+          <video id="local-video" autoplay playsinline muted></video>
+          <span class="video-label">You</span>
+        </div>
+        <div class="video-wrapper">
+          <video id="remote-video" autoplay playsinline></video>
+          <span class="video-label">Trading Partner</span>
+        </div>
+      </div>
+      <div class="chat-controls">
+        <button id="toggle-audio" class="control-btn">
+          <i class="fas fa-microphone"></i>
+        </button>
+        <button id="toggle-video" class="control-btn">
+          <i class="fas fa-video"></i>
+        </button>
+        <button id="record-btn" class="control-btn">
+          <i class="fas fa-circle"></i>
+        </button>
+      </div>
+      <div class="live-chat-panel">
+        <div id="chat-messages" class="chat-messages"></div>
+        <form id="chat-form" class="chat-form" autocomplete="off">
+          <input id="chat-input" type="text" placeholder="Type a message..." autocomplete="off" />
+          <button type="submit"><i class="fas fa-paper-plane"></i></button>
+        </form>
+        <button id="ai-search-btn" class="ai-search-btn"><i class="fas fa-robot"></i> Search with AI</button>
+        <form id="ai-search-form" class="ai-search-form" style="display:none; margin-top:8px;">
+          <input id="ai-search-input" type="text" placeholder="Ask AI about any topic..." autocomplete="off" />
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+    `;
+
+    // Add event listeners for controls
+    document.getElementById('end-video-chat').addEventListener('click', () => {
+      endVideoChat(roomId);
+    });
+
+    document.getElementById('toggle-audio').addEventListener('click', (e) => {
+      const isMuted = localStream.getAudioTracks()[0].enabled;
+      localStream.getAudioTracks()[0].enabled = !isMuted;
+      e.currentTarget.querySelector('i').className = isMuted ? 'fas fa-microphone-slash' : 'fas fa-microphone';
+    });
+
+    document.getElementById('toggle-video').addEventListener('click', (e) => {
+      const isVideoEnabled = localStream.getVideoTracks()[0].enabled;
+      localStream.getVideoTracks()[0].enabled = !isVideoEnabled;
+      e.currentTarget.querySelector('i').className = isVideoEnabled ? 'fas fa-video-slash' : 'fas fa-video';
+    });
+
+    // Record button
+    document.getElementById('record-btn').addEventListener('click', (e) => {
+      if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+        startRecording();
+        e.currentTarget.querySelector('i').style.color = 'red';
+      } else if (mediaRecorder.state === 'recording') {
+        stopRecording();
+        e.currentTarget.querySelector('i').style.color = '';
+      }
+    });
+
+    // Live chat events
+    document.getElementById('chat-form').addEventListener('submit', function(ev) {
+      ev.preventDefault();
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (msg) {
+        sendChatMessage(msg);
+        input.value = '';
+      }
+    });
+    renderChatMessages();
+
+    // AI Search button logic
+    const aiSearchBtn = document.getElementById('ai-search-btn');
+    const aiSearchForm = document.getElementById('ai-search-form');
+    const aiSearchInput = document.getElementById('ai-search-input');
+    if (aiSearchBtn && aiSearchForm && aiSearchInput) {
+      aiSearchBtn.addEventListener('click', () => {
+        aiSearchForm.style.display = aiSearchForm.style.display === 'none' ? 'flex' : 'none';
+        aiSearchInput.focus();
+      });
+      aiSearchForm.addEventListener('submit', async function(ev) {
+        ev.preventDefault();
+        const query = aiSearchInput.value.trim();
+        if (!query) return;
+        aiSearchInput.value = '';
+        aiSearchForm.style.display = 'none';
+        // Show loading message
+        sendChatMessage('[AI is searching for: ' + query + ' ...]');
+        // Fetch answer (placeholder for now)
+        let answer = await aiSearch(query);
+        sendChatMessage('[AI Answer]: ' + answer, true);
+      });
+    }
+  }
+
+  function endVideoChat(roomId) {
+    // Stop all tracks
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+    }
+    
+    // Close peer connection
+    if (peerConnection) {
+      peerConnection.close();
+    }
+    
+    // Clean up localStorage
+    localStorage.removeItem(`skilltrade_offer_${roomId}`);
+    localStorage.removeItem(`skilltrade_answer_${roomId}`);
+    localStorage.removeItem(`skilltrade_ice_${roomId}`);
+    if (chatInterval) clearInterval(chatInterval);
+    chatRoomId = null;
+    
+    // Remove video chat UI
+    const videoChatContainer = document.getElementById('video-chat-container');
+    if (videoChatContainer) {
+      videoChatContainer.remove();
+    }
+    
+    showNotification('Video chat ended');
+  }
+
+  // AI Search function (uses web search API or placeholder)
+  async function aiSearch(query) {
+    // Placeholder: you can replace this with a real API call
+    try {
+      // Example: Use DuckDuckGo Instant Answer API (no key required, but CORS may block in browser)
+      // let resp = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1&no_html=1`);
+      // let data = await resp.json();
+      // return data.AbstractText || data.Answer || 'No concise answer found.';
+      // For now, return a static message
+      return 'This is a sample AI answer for: ' + query + '. (Integrate a real AI or search API for production.)';
+    } catch (e) {
+      return 'Sorry, AI search failed.';
+    }
+  }
+
+  // Update sendChatMessage to support AI/system messages
+  function sendChatMessage(msg, isAI) {
+    if (!chatRoomId) return;
+    const user = isAI ? 'AI Assistant' : (currentUser || 'User');
+    const chatKey = `skilltrade_chat_${chatRoomId}`;
+    const messages = JSON.parse(localStorage.getItem(chatKey) || '[]');
+    messages.push({ user, msg, ts: Date.now(), isAI: !!isAI });
+    localStorage.setItem(chatKey, JSON.stringify(messages));
+    renderChatMessages();
+  }
+
+  // Update renderChatMessages to style AI/system messages
+  function renderChatMessages() {
+    if (!chatRoomId) return;
+    const chatKey = `skilltrade_chat_${chatRoomId}`;
+    const messages = JSON.parse(localStorage.getItem(chatKey) || '[]');
+    const chatBox = document.getElementById('chat-messages');
+    if (!chatBox) return;
+    chatBox.innerHTML = '';
+    messages.slice(-100).forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'chat-message' + (m.isAI ? ' ai-message' : '');
+      div.innerHTML = `<span class="chat-user">${m.user}:</span> <span class="chat-text">${escapeHTML(m.msg)}</span>`;
+      chatBox.appendChild(div);
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Initialize app
+  init();
+});
+</script>
+</body>
+</html>

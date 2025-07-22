@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>SkillTrader Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      color: #2c3e50;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      background: #1e293b;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .nav-link {
+      color: #fff;
+      background: #6366f1;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .nav-link:hover {
+      background: #4f46e5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    }
+    h2 {
+      color: #1e293b;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+    }
+    tr:hover {
+      background: #f8fafc;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    .action-btn {
+      background: #e11d48;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.4rem 1rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+    .action-btn:hover {
+      background: #be123c;
+    }
+    @media (max-width: 700px) {
+      .container { padding: 1rem; }
+      th, td { padding: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>SkillTrader Admin Dashboard</h1>
+    <a href="peer_to_peer_skill_trading_platform.html" class="nav-link">Back to Platform</a>
+  </div>
+  <div class="container">
+    <div class="section">
+      <h2>Users</h2>
+      <table id="users-table">
+        <thead>
+          <tr><th>Username</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="section">
+      <h2>Skills</h2>
+      <table id="skills-table">
+        <thead>
+          <tr><th>Skill</th><th>Owner</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="section">
+      <h2>Trades</h2>
+      <table id="trades-table">
+        <thead>
+          <tr><th>Proposer</th><th>Offer Skill</th><th>Request Skill</th><th>Request Owner</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const API_BASE_URL = 'http://localhost:3000/api';
+    // Fetch and render users
+    async function fetchUsers() {
+      const res = await fetch(`${API_BASE_URL}/users`);
+      return res.ok ? res.json() : [];
+    }
+    async function fetchSkills() {
+      const res = await fetch(`${API_BASE_URL}/skills`);
+      return res.ok ? res.json() : [];
+    }
+    async function fetchTrades() {
+      const res = await fetch(`${API_BASE_URL}/trades`);
+      return res.ok ? res.json() : [];
+    }
+    async function deleteUser(username) {
+      if (!confirm(`Delete user ${username}?`)) return;
+      await fetch(`${API_BASE_URL}/users/${encodeURIComponent(username)}`, { method: 'DELETE' });
+      renderAll();
+    }
+    async function deleteSkill(id) {
+      if (!confirm('Delete this skill?')) return;
+      await fetch(`${API_BASE_URL}/skills/${id}`, { method: 'DELETE' });
+      renderAll();
+    }
+    async function deleteTrade(id) {
+      if (!confirm('Delete this trade?')) return;
+      await fetch(`${API_BASE_URL}/trades/${id}`, { method: 'DELETE' });
+      renderAll();
+    }
+    async function renderAll() {
+      // Users
+      const users = await fetchUsers();
+      const usersTbody = document.querySelector('#users-table tbody');
+      usersTbody.innerHTML = users.map(u => `<tr><td>${u.username}</td><td><button class='action-btn' onclick='deleteUser("${u.username}")'>Delete</button></td></tr>`).join('');
+      // Skills
+      const skills = await fetchSkills();
+      const skillsTbody = document.querySelector('#skills-table tbody');
+      skillsTbody.innerHTML = skills.map(s => `<tr><td>${s.name}</td><td>${s.owner}</td><td><button class='action-btn' onclick='deleteSkill("${s.id}")'>Delete</button></td></tr>`).join('');
+      // Trades
+      const trades = await fetchTrades();
+      const tradesTbody = document.querySelector('#trades-table tbody');
+      tradesTbody.innerHTML = trades.map(t => `<tr><td>${t.proposer}</td><td>${t.offerSkill?.name || ''}</td><td>${t.requestSkill?.name || ''}</td><td>${t.requestSkill?.owner || ''}</td><td><button class='action-btn' onclick='deleteTrade("${t.id}")'>Delete</button></td></tr>`).join('');
+    }
+    // Expose delete functions globally for inline onclick
+    window.deleteUser = deleteUser;
+    window.deleteSkill = deleteSkill;
+    window.deleteTrade = deleteTrade;
+    // Initial render
+    renderAll();
+  </script>
+</body>
+</html>

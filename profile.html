@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>User Profile - SkillTrader</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      color: #2c3e50;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      padding: 2rem 2.5rem 2.5rem 2.5rem;
+    }
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .profile-image-container {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #f1f5f9;
+      border: 3px solid #6366f1;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .profile-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .edit-image-btn {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.3rem 1rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      opacity: 0.9;
+      transition: background 0.2s;
+    }
+    .edit-image-btn:hover {
+      background: #4f46e5;
+    }
+    .profile-name {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .profile-details {
+      margin-top: 1.5rem;
+    }
+    .detail-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.2rem;
+    }
+    .detail-label {
+      width: 120px;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .detail-value {
+      color: #1e293b;
+      font-size: 1.05rem;
+      font-weight: 500;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: #6366f1;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover {
+      color: #4f46e5;
+      text-decoration: underline;
+    }
+    .edit-profile-btn {
+      display: inline-block;
+      margin: 1.5rem auto 0 auto;
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .edit-profile-btn:hover {
+      background: #4f46e5;
+    }
+    .edit-form {
+      display: none;
+      margin-top: 1.5rem;
+    }
+    .edit-form input[type="text"],
+    .edit-form input[type="email"],
+    .edit-form input[type="tel"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 1.1rem;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+    .edit-form label {
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+    .edit-form .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+    .edit-form button {
+      padding: 0.5rem 1.3rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .edit-form .save-btn {
+      background: #6366f1;
+      color: #fff;
+    }
+    .edit-form .save-btn:hover {
+      background: #4f46e5;
+    }
+    .edit-form .cancel-btn {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+    .edit-form .cancel-btn:hover {
+      background: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="profile-header">
+      <div class="profile-image-container">
+        <img src="https://via.placeholder.com/150" alt="Profile Image" class="profile-image" id="profile-image">
+        <button class="edit-image-btn" id="edit-image-btn" title="Change Photo"><i class="fas fa-camera"></i></button>
+        <input type="file" id="profile-image-input" accept="image/*" style="display:none;">
+      </div>
+      <div class="profile-name" id="profile-name">User</div>
+    </div>
+    <div class="profile-details" id="profile-details-view">
+      <div class="detail-row">
+        <div class="detail-label"><i class="fas fa-graduation-cap"></i> Education:</div>
+        <div class="detail-value" id="profile-education">Not set</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label"><i class="fas fa-envelope"></i> Email:</div>
+        <div class="detail-value" id="profile-email">Not set</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label"><i class="fas fa-map-marker-alt"></i> Address:</div>
+        <div class="detail-value" id="profile-address">Not set</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label"><i class="fas fa-phone"></i> Phone:</div>
+        <div class="detail-value" id="profile-phone">Not set</div>
+      </div>
+    </div>
+    <button class="edit-profile-btn" id="edit-profile-btn"><i class="fas fa-edit"></i> Edit Profile</button>
+    <form class="edit-form" id="edit-form">
+      <label for="edit-name">Name</label>
+      <input type="text" id="edit-name" required>
+      <label for="edit-education">Education</label>
+      <input type="text" id="edit-education">
+      <label for="edit-email">Email</label>
+      <input type="email" id="edit-email">
+      <label for="edit-address">Address</label>
+      <input type="text" id="edit-address">
+      <label for="edit-phone">Phone</label>
+      <input type="tel" id="edit-phone">
+      <div class="form-actions">
+        <button type="button" class="cancel-btn">Cancel</button>
+        <button type="submit" class="save-btn">Save</button>
+      </div>
+    </form>
+    <a href="peer_to_peer_skill_trading_platform.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Platform</a>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentUser = localStorage.getItem('skilltrade_currentUser') || 'User';
+      const profileName = document.getElementById('profile-name');
+      const profileImage = document.getElementById('profile-image');
+      const profileDetailsView = document.getElementById('profile-details-view');
+      const editProfileBtn = document.getElementById('edit-profile-btn');
+      const editForm = document.getElementById('edit-form');
+      const editName = document.getElementById('edit-name');
+      const editEducation = document.getElementById('edit-education');
+      const editEmail = document.getElementById('edit-email');
+      const editAddress = document.getElementById('edit-address');
+      const editPhone = document.getElementById('edit-phone');
+      const editImageBtn = document.getElementById('edit-image-btn');
+      const profileImageInput = document.getElementById('profile-image-input');
+
+      // Load profile data
+      function loadProfile() {
+        profileName.textContent = currentUser;
+        // Load image
+        const savedImage = localStorage.getItem(`skilltrade_profile_image_${currentUser}`);
+        if (savedImage) {
+          profileImage.src = savedImage;
+        } else {
+          profileImage.src = 'https://via.placeholder.com/150';
+        }
+        // Load details
+        const savedProfile = localStorage.getItem(`skilltrade_profile_${currentUser}`);
+        let profile = {};
+        if (savedProfile) {
+          try {
+            profile = JSON.parse(savedProfile);
+          } catch {}
+        }
+        document.getElementById('profile-education').textContent = profile.education || 'Not set';
+        document.getElementById('profile-email').textContent = profile.email || 'Not set';
+        document.getElementById('profile-address').textContent = profile.address || 'Not set';
+        document.getElementById('profile-phone').textContent = profile.phone || 'Not set';
+      }
+      loadProfile();
+
+      // Edit button
+      editProfileBtn.addEventListener('click', function() {
+        profileDetailsView.style.display = 'none';
+        editProfileBtn.style.display = 'none';
+        editForm.style.display = 'block';
+        // Pre-fill form
+        editName.value = profileName.textContent;
+        editEducation.value = document.getElementById('profile-education').textContent !== 'Not set' ? document.getElementById('profile-education').textContent : '';
+        editEmail.value = document.getElementById('profile-email').textContent !== 'Not set' ? document.getElementById('profile-email').textContent : '';
+        editAddress.value = document.getElementById('profile-address').textContent !== 'Not set' ? document.getElementById('profile-address').textContent : '';
+        editPhone.value = document.getElementById('profile-phone').textContent !== 'Not set' ? document.getElementById('profile-phone').textContent : '';
+      });
+
+      // Cancel button
+      editForm.querySelector('.cancel-btn').addEventListener('click', function() {
+        editForm.style.display = 'none';
+        profileDetailsView.style.display = 'block';
+        editProfileBtn.style.display = 'inline-block';
+      });
+
+      // Save button
+      editForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Save profile
+        const profile = {
+          education: editEducation.value,
+          email: editEmail.value,
+          address: editAddress.value,
+          phone: editPhone.value
+        };
+        localStorage.setItem(`skilltrade_profile_${currentUser}`, JSON.stringify(profile));
+        // Save name
+        profileName.textContent = editName.value;
+        // Save image is handled separately
+        editForm.style.display = 'none';
+        profileDetailsView.style.display = 'block';
+        editProfileBtn.style.display = 'inline-block';
+        loadProfile();
+      });
+
+      // Edit image
+      editImageBtn.addEventListener('click', function() {
+        profileImageInput.click();
+      });
+      profileImageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            profileImage.src = evt.target.result;
+            localStorage.setItem(`skilltrade_profile_image_${currentUser}`, evt.target.result);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+  </script>
+</body>
+</html> 

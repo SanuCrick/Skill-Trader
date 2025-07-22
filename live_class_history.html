@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Class History - SkillTrader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      color: #2c3e50;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      padding: 2rem 2.5rem 2.5rem 2.5rem;
+    }
+    h1 {
+      color: #6366f1;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+    .history-table th, .history-table td {
+      padding: 1rem 0.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+    }
+    .history-table th {
+      background: #f1f5f9;
+      color: #4f46e5;
+      font-weight: 700;
+    }
+    .history-table tr:last-child td {
+      border-bottom: none;
+    }
+    .download-link {
+      color: #6366f1;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .download-link:hover {
+      color: #4f46e5;
+      text-decoration: underline;
+    }
+    .no-history {
+      text-align: center;
+      color: #64748b;
+      font-size: 1.1rem;
+      margin: 2rem 0;
+    }
+    .back-btn {
+      display: inline-block;
+      background: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 1.5rem;
+      transition: background 0.2s;
+    }
+    .back-btn:hover {
+      background: #4f46e5;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 1rem; }
+      .history-table th, .history-table td { padding: 0.5rem 0.2rem; }
+      h1 { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="peer_to_peer_skill_trading_platform.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Platform</a>
+    <h1>Live Class History</h1>
+    <div id="history-content"></div>
+  </div>
+  <script>
+    function formatDate(ts) {
+      const d = new Date(ts);
+      return d.toLocaleString();
+    }
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, function(tag) {
+        const charsToReplace = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        };
+        return charsToReplace[tag] || tag;
+      });
+    }
+    // Get current user
+    const currentUser = localStorage.getItem('skilltrade_currentUser');
+    // Get history
+    const historyKey = `skilltrade_class_history_${currentUser}`;
+    const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+    const content = document.getElementById('history-content');
+    if (!history.length) {
+      content.innerHTML = '<div class="no-history">No live class sessions found.<br>Recordings will appear here after your live sessions.</div>';
+    } else {
+      let html = '<table class="history-table">';
+      html += '<tr><th>Date/Time</th><th>Skill</th><th>Partner</th><th>Recording</th></tr>';
+      history.slice().reverse().forEach(item => {
+        html += `<tr>
+          <td>${formatDate(item.timestamp)}</td>
+          <td>${escapeHTML(item.skill)}</td>
+          <td>${escapeHTML(item.partner)}</td>
+          <td>` + (item.videoUrl ? `<a class="download-link" href="${item.videoUrl}" download="${escapeHTML(item.fileName)}"><i class="fas fa-download"></i> Download</a>` : '<span style="color:#aaa">Not recorded</span>') + `</td>
+        </tr>`;
+      });
+      html += '</table>';
+      content.innerHTML = html;
+    }
+  </script>
+</body>
+</html> 
